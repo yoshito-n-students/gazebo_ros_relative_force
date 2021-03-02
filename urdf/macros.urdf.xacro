@@ -1,0 +1,43 @@
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <!-- macros -->
+
+    <xacro:macro name="make_box_link" params="name mass size_x size_y size_z">
+        <link name="${name}">
+            <inertial>
+                <origin xyz="0 0 ${size_z / 2}" />
+                <mass value="${mass}" />
+                <inertia ixx="${mass * (size_y * size_y + size_z * size_z) / 12}" ixy="0" ixz="0"
+                         iyy="${mass * (size_z * size_z + size_x * size_x) / 12}" iyz="0"
+                         izz="${mass * (size_x * size_x + size_y * size_y) / 12}" />
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${size_z / 2}" />
+                <geometry>
+                    <box size="${size_x} ${size_y} ${size_z}" />
+                </geometry>
+            </visual>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="make_pendulum_links">
+        <xacro:make_box_link name="base" mass="100." size_x="1." size_y="1." size_z="0.1" />
+
+        <joint name="base_to_body" type="continuous">
+            <origin xyz="0 0 0.5" rpy="3.1415 0 0" />
+            <parent link="base" />
+            <child link="body" />
+        </joint>
+
+        <xacro:make_box_link name="body" mass="1." size_x="0.05" size_y="0.05" size_z="0.5" />
+
+        <joint name="body_to_head" type="fixed">
+            <origin xyz="0 0 0.5" rpy="0 0 0" />
+            <parent link="body" />
+            <child link="head" />
+        </joint>
+
+        <xacro:make_box_link name="head" mass="1." size_x="0.2" size_y="0.2" size_z="0.2" />
+    </xacro:macro>
+
+</robot>

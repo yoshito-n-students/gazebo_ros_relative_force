@@ -1,0 +1,23 @@
+<launch>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch" />
+
+    <!-- A pendulum applied relative force -->
+
+    <param name="pendulum_r_description" 
+           command="xacro $(find gazebo_ros_relative_force)/urdf/pendulum_r.urdf.xacro" />
+
+    <node name="spawn_pendulum_r" pkg="gazebo_ros" type="spawn_model" 
+          args="-param pendulum_r_description -urdf -model pendulum_r -y 1"
+          output="screen" />
+
+    <!-- A pendulum applied global force -->
+
+    <param name="pendulum_g_description" 
+           command="xacro $(find gazebo_ros_relative_force)/urdf/pendulum_g.urdf.xacro" />
+
+    <node name="spawn_pendulum_g" pkg="gazebo_ros" type="spawn_model" 
+          args="-param pendulum_g_description -urdf -model pendulum_g -y -1"
+          output="screen" />
+
+</launch>

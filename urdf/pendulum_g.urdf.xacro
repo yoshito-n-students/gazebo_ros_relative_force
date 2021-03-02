@@ -1,0 +1,20 @@
+<robot name="pendulum_r" xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:include filename="macros.urdf.xacro" />
+
+    <xacro:make_pendulum_links />
+
+    <gazebo reference="body_to_head">
+        <disableFixedJointLumping>true</disableFixedJointLumping>
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo> 
+
+    <gazebo>
+        <plugin name="gazebo_ros_force" filename="libgazebo_ros_force.so">
+            <bodyName>head</bodyName>
+            <robotNamespace>pendulum_g</robotNamespace>
+            <topicName>wrench</topicName>
+        </plugin>
+    </gazebo>
+
+</robot>
