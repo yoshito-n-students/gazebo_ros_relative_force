@@ -75,9 +75,10 @@ protected:
     msg_ = *_msg;
   }
 
-  static std::string param(sdf::ElementPtr _sdf, const std::string &key,
-                           const std::string &default_val) {
-    return _sdf->HasElement(key) ? _sdf->GetElement(key)->Get<std::string>() : default_val;
+  static std::string param(const sdf::ElementPtr _sdf, const std::string &_key,
+                           const std::string &_default_val) {
+    const sdf::ElementPtr elm = _sdf->GetElement(_key);
+    return elm ? elm->Get<std::string>() : _default_val;
   }
 
 protected:
