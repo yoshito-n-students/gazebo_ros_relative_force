@@ -2,26 +2,22 @@
 #define GAZEBO_ROS_RELATIVE_FORCE
 
 #include <functional> // for std::bind()
-#include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 
 #include <gazebo/common/common.hh>
 #include <gazebo/physics/physics.hh>
 
 #include <geometry_msgs/Wrench.h>
-#include <ros/callback_queue.h>
 #include <ros/console.h>
 #include <ros/node_handle.h>
-#include <ros/spinner.h>
 #include <ros/subscriber.h>
 
 namespace gazebo {
 
 class GazeboRosRelativeForce : public ModelPlugin {
 public:
-  GazeboRosRelativeForce() : spinner_(/* thread_count = */ 1, /* callback_queue = */ &queue_) {
+  GazeboRosRelativeForce() {
     msg_.force.x = msg_.force.y = msg_.force.z = 0.;
     msg_.torque.x = msg_.torque.y = msg_.torque.z = 0.;
   }
@@ -29,7 +25,6 @@ public:
   virtual ~GazeboRosRelativeForce() {
     // stop stuffs in reverse order of Load() (would not be required, but just in case)
     update_connection_.reset();
-    spinner_.stop();
     sub_.shutdown();
   }
 
@@ -53,18 +48,15 @@ public:
       return;
     }
     ros::NodeHandle nh(param(_sdf, "robotNamespace", ""));
-    nh.setCallbackQueue(&queue_);
 
     // setup ROS subscriber
+    // (spinning the default ROS queue is not needed because gazebo_ros_api_plugin does that)
     const std::string topic_name = param(_sdf, "topicName", "");
     if (topic_name.empty()) {
       ROS_FATAL("GazeboRosRelativeForce::Load(): Missing or empty <topicName>");
       return;
     }
     sub_ = nh.subscribe(topic_name, 1, &GazeboRosRelativeForce::OnRosMsgReceived, this);
-
-    // start subscribing ROS messages
-    spinner_.start();
 
     // start updating force acting on the link
     update_connection_ = event::Events::ConnectWorldUpdateBegin(
@@ -95,8 +87,6 @@ protected:
 
   // Ros stuffs
   ros::Subscriber sub_;
-  ros::CallbackQueue queue_;
-  ros::AsyncSpinner spinner_;
   geometry_msgs::Wrench msg_;
   std::mutex msg_mutex_;
 };
