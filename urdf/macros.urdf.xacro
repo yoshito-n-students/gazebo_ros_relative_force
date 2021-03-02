@@ -17,16 +17,23 @@
                     <box size="${size_x} ${size_y} ${size_z}" />
                 </geometry>
             </visual>
+            <collision>
+                <origin xyz="0 0 ${size_z / 2}" />
+                <geometry>
+                    <box size="${size_x} ${size_y} ${size_z}" />
+                </geometry>
+            </collision>
         </link>
     </xacro:macro>
 
     <xacro:macro name="make_pendulum_links">
-        <xacro:make_box_link name="base" mass="100." size_x="1." size_y="1." size_z="0.1" />
+        <xacro:make_box_link name="base" mass="1000." size_x="1." size_y="1." size_z="0.1" />
 
         <joint name="base_to_body" type="continuous">
-            <origin xyz="0 0 0.5" rpy="3.1415 0 0" />
+            <origin xyz="0 0 1." rpy="3.1415 0 0" />
             <parent link="base" />
             <child link="body" />
+            <dynamics friction="1." damping="0.1" />
         </joint>
 
         <xacro:make_box_link name="body" mass="1." size_x="0.05" size_y="0.05" size_z="0.5" />
